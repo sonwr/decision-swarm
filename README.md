@@ -41,6 +41,7 @@ chmod +x scripts/ops-check.sh
 
 Optional:
 - `DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh`
+- `DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-check.sh`
 
 ## Status
 
