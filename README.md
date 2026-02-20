@@ -32,6 +32,16 @@ Most people decide with 1-2 opinions and weak structure.
 
 See `docs/ROADMAP.md`.
 
+## Operations check
+
+```bash
+chmod +x scripts/ops-check.sh
+./scripts/ops-check.sh
+```
+
+Optional:
+- `DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh`
+
 ## Status
 
 - [x] Repository bootstrap
