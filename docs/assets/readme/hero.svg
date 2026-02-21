@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
-<rect width="1200" height="400" fill="#1f2937"/><polygon points="880,90 980,150 980,250 880,310 780,250 780,150" fill="none" stroke="#f472b6" stroke-width="3"/><polygon points="880,130 940,165 940,235 880,270 820,235 820,165" fill="none" stroke="#60a5fa" stroke-width="2"/>
-<text x="80" y="120" fill="#e2e8f0" font-family="Arial,sans-serif" font-size="52" font-weight="700">decision-swarm</text>
-<text x="80" y="165" fill="#93c5fd" font-family="Arial,sans-serif" font-size="24">radar-consensus</text>
-<text x="80" y="198" fill="#94a3b8" font-family="Arial,sans-serif" font-size="18">radar motif · privacy-safe generated cover</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-label="decision-swarm hero">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bg)"/>
+  <circle cx="1030" cy="90" r="120" fill="#22d3ee" opacity="0.18"/>
+  <circle cx="180" cy="320" r="150" fill="#a78bfa" opacity="0.18"/>
+  <text x="70" y="170" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="56" font-weight="700">decision-swarm</text>
+  <text x="70" y="225" fill="#93c5fd" font-family="Arial, sans-serif" font-size="28">Multi-Agent Decision Support</text>
+  <text x="70" y="275" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="22">Security-safe generated illustration (no private data).</text>
 </svg>
