@@ -23,7 +23,7 @@ check_token() {
   local path="$2"
   local pattern="$3"
 
-  if grep -qi "$pattern" "$path"; then
+  if grep -Eqi "$pattern" "$path"; then
     echo "[decision-swarm] ${label}: ok (${pattern})"
   else
     echo "[decision-swarm] ${label}: missing token (${pattern})"
@@ -33,8 +33,8 @@ check_token() {
 
 check_file "readme" "${REPO_ROOT}/README.md"
 check_file "roadmap" "${REPO_ROOT}/docs/ROADMAP.md"
-check_token "mvp section" "${REPO_ROOT}/README.md" "MVP scope"
-check_token "status section" "${REPO_ROOT}/README.md" "## Status"
+check_token "mvp section" "${REPO_ROOT}/README.md" "MVP[[:space:]]+Scope"
+check_token "status section" "${REPO_ROOT}/README.md" "##[[:space:]]+.*Status"
 
 if (( FAILURES > 0 )); then
   status="fail"
