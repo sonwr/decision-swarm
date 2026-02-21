@@ -1,89 +1,71 @@
 # decision-swarm
 
-<p align="center">
-  <strong>Multi-agent decision support engine</strong><br/>
-  Turn one hard question into structured perspectives, risk maps, and action plans.
-</p>
+> **Multi-agent decision engine that makes disagreement explicit, measurable, and actionable.**
 
-<p align="center">
-  <img alt="mode" src="https://img.shields.io/badge/mode-multi--agent-7C3AED"/>
-  <img alt="output" src="https://img.shields.io/badge/output-markdown%20%2B%20json-0EA5E9"/>
-  <img alt="status" src="https://img.shields.io/badge/status-active%20development-16A34A"/>
-</p>
+![Status](https://img.shields.io/badge/Status-Active_Development-0ea5e9)
+![Domain](https://img.shields.io/badge/Domain-Decision_Intelligence-black)
+![License](https://img.shields.io/badge/License-MIT-black)
 
----
+## ◼ Background
 
-## Overview
+Complex decisions fail less from lack of data and more from hidden assumptions, missing dissent, and unstructured tradeoffs.  
+decision-swarm was initiated to formalize those blind spots.
 
-`decision-swarm` helps with complex decisions by orchestrating multiple advisor agents and aggregating their outputs into a concise recommendation package.
+## ◼ Mission
 
----
+Transform one high-stakes question into a structured recommendation package with transparent disagreement, confidence boundaries, and risk-aware execution steps.
 
-## Problem It Solves
+## ◼ Vision
 
-Most real decisions fail because inputs are narrow and disagreement is implicit.
-This project makes disagreement explicit and actionable.
+A reusable decision substrate for engineering/product/operations contexts where multi-perspective reasoning is required and auditability matters.
 
----
+## ◼ Philosophical Stance
 
-## Core Outputs
+- **Disagreement is signal, not noise.**
+- **Confidence must be explicit.**
+- **Recommendations are incomplete without mitigation paths.**
 
-- Recommended direction + confidence band
-- Dissent map (where/why agents disagree)
-- Top risks with mitigations
-- Practical action checklist (24h / 7d)
+## ◼ Core Deliverables
 
----
+| Deliverable | Description |
+|---|---|
+| Direction | recommended path + confidence band |
+| Dissent map | where advisor views diverge |
+| Risk matrix | top risk vectors + mitigations |
+| Action windows | immediate (24h) and near-term (7d) actions |
 
-## Planned Architecture
+## ◼ Architecture
 
 ```mermaid
 flowchart LR
-  I[Decision Input Schema] --> P[Advisor Panel]
-  P --> A[Aggregation Engine]
-  A --> R[Decision Report]
-  R --> M[Markdown]
-  R --> J[JSON]
+  Input[Decision Input Schema] --> Panel[Advisor Panel]
+  Panel --> Agg[Aggregation Engine]
+  Agg --> Report[Decision Report]
+  Report --> MD[Markdown]
+  Report --> JSON[JSON]
 ```
 
----
-
-## MVP Scope
+## ◼ MVP Scope
 
 1. Input schema (`question`, `constraints`, `risk_tolerance`, `time_horizon`)
 2. Parallel advisor execution
-3. Aggregation and scoring
-4. Report formatter
+3. Consensus/divergence scoring
+4. Multi-format report generation
 
-See: `docs/ROADMAP.md`
-
----
-
-## Operations Check
+## ◼ Operations Check
 
 ```bash
 chmod +x scripts/ops-check.sh
 ./scripts/ops-check.sh
 ```
 
-Optional:
-
-```bash
-DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh
-DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-check.sh
-```
-
----
-
-## Status
+## ◼ Status
 
 - [x] Repository bootstrap
 - [ ] Execution engine
-- [ ] Aggregation + formatter
-- [ ] CLI interface
+- [ ] Aggregation internals
+- [ ] CLI workflow
 
----
+## ◼ License
 
-## License
-
-MIT (or project-defined license).
+MIT (or project-defined license)
