@@ -1,40 +1,34 @@
 # decision-swarm
 
-<p align="center">
-  <img src="./docs/assets/readme/hero.svg" alt="decision-swarm cover" width="100%" />
-</p>
+Multi-agent engine for high-stakes decision support.
 
 <p align="center">
-  <strong>Multi-agent decision support with explicit disagreement modeling.</strong>
+  <img src="./docs/assets/readme/hero.svg" alt="decision-swarm hero" width="100%"/>
 </p>
 
-## Overview
+## What it does
 
-decision-swarm is built for decisions where one perspective is not enough.
+Given one hard question, decision-swarm builds multiple advisor perspectives, then summarizes direction, disagreement, and risk into an actionable report.
 
-Given a single question, it orchestrates multiple advisor viewpoints, then produces a compact result package for execution planning.
+## Core Outputs
 
-## Output philosophy
+- Recommendation + confidence band
+- Dissent map (where and why agents disagree)
+- Top risk list with mitigations
+- Action checklist for near-term execution
 
-The goal is not “AI says yes/no.”
-The goal is:
+## Screenshots
 
-- recommended direction
-- confidence band
-- dissent structure
-- risk + mitigation list
-- immediate action checklist
-
-## Terminal snapshot
+Sanitized terminal check:
 
 ![decision-swarm terminal](./docs/assets/screenshots/terminal.svg)
 
 ## MVP scope
 
-1. Structured input schema
-2. Parallel advisor execution
-3. Aggregation and consensus scoring
-4. Markdown + JSON report generation
+1. Input schema (`question`, `constraints`, `risk_tolerance`, `time_horizon`)
+2. Advisor panel execution
+3. Aggregation and scoring
+4. Report export (Markdown + JSON)
 
 ## Operations check
 
@@ -43,7 +37,7 @@ chmod +x scripts/ops-check.sh
 ./scripts/ops-check.sh
 ```
 
-Optional:
+Optional report output:
 
 ```bash
 DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh
@@ -52,10 +46,10 @@ DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-chec
 
 ## Status
 
-- [x] bootstrap + base docs
-- [ ] execution engine
-- [ ] aggregation internals
-- [ ] CLI flow
+- [x] Bootstrap + base docs
+- [ ] Execution engine
+- [ ] Aggregation internals
+- [ ] CLI workflow
 
 ## License
 
