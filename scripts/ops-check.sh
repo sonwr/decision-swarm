@@ -23,7 +23,7 @@ check_token() {
   local path="$2"
   local pattern="$3"
 
-  if grep -q "$pattern" "$path"; then
+  if grep -qi "$pattern" "$path"; then
     echo "[decision-swarm] ${label}: ok (${pattern})"
   else
     echo "[decision-swarm] ${label}: missing token (${pattern})"
