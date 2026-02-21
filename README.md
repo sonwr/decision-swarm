@@ -1,85 +1,88 @@
 # decision-swarm
 
 <p align="center">
-  <img src="./docs/assets/readme/hero.svg" alt="decision-swarm cover" width="100%" />
+  <strong>Multi-agent decision support engine</strong><br/>
+  Turn one hard question into structured perspectives, risk maps, and action plans.
 </p>
 
 <p align="center">
-  <strong>Multi-Agent Decision Support</strong><br/>
-  Transforms one hard question into structured recommendations, dissent maps, and risk outputs.
+  <img alt="mode" src="https://img.shields.io/badge/mode-multi--agent-7C3AED"/>
+  <img alt="output" src="https://img.shields.io/badge/output-markdown%20%2B%20json-0EA5E9"/>
+  <img alt="status" src="https://img.shields.io/badge/status-active%20development-16A34A"/>
 </p>
-
-<p align="center">
-  <img alt="maintained" src="https://img.shields.io/badge/maintained-yes-16a34a"/>
-  <img alt="docs" src="https://img.shields.io/badge/docs-updated-0ea5e9"/>
-</p>
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Why This Project](#why-this-project)
-- [Core Capabilities](#core-capabilities)
-- [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
-- [Operations](#operations)
-- [Roadmap](#roadmap)
-- [Security & Privacy](#security--privacy)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
 ## Overview
 
-Transforms one hard question into structured recommendations, dissent maps, and risk outputs.
+`decision-swarm` helps with complex decisions by orchestrating multiple advisor agents and aggregating their outputs into a concise recommendation package.
 
-Built for explicit disagreement handling and decision transparency.
+---
 
-## Why This Project
+## Problem It Solves
 
-This repository exists to provide a practical, production-oriented foundation with clear operational visibility and repeatable workflows.
+Most real decisions fail because inputs are narrow and disagreement is implicit.
+This project makes disagreement explicit and actionable.
 
-## Core Capabilities
+---
 
-- Structured runtime behavior with deterministic checks
-- Ops-oriented scripts for health verification and reporting
-- Clean handoff between development, validation, and reporting
-- Incremental enhancements designed for continuous operation loops
+## Core Outputs
 
-## Tech Stack
+- Recommended direction + confidence band
+- Dissent map (where/why agents disagree)
+- Top risks with mitigations
+- Practical action checklist (24h / 7d)
 
-`Node.js, TypeScript (planned), JSON/Markdown outputs`
+---
 
-## Quick Start
+## Planned Architecture
+
+```mermaid
+flowchart LR
+  I[Decision Input Schema] --> P[Advisor Panel]
+  P --> A[Aggregation Engine]
+  A --> R[Decision Report]
+  R --> M[Markdown]
+  R --> J[JSON]
+```
+
+---
+
+## MVP Scope
+
+1. Input schema (`question`, `constraints`, `risk_tolerance`, `time_horizon`)
+2. Parallel advisor execution
+3. Aggregation and scoring
+4. Report formatter
+
+See: `docs/ROADMAP.md`
+
+---
+
+## Operations Check
 
 ```bash
 chmod +x scripts/ops-check.sh
 ./scripts/ops-check.sh
 ```
 
-## Operations
+Optional:
 
 ```bash
-DECISION_SWARM_REPORT_FILE=/tmp/report.json ./scripts/ops-check.sh
+DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh
+DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-check.sh
 ```
 
-## Roadmap
+---
 
-- Improve monitoring depth and trend-based diagnostics
-- Expand automation and report schema consistency
-- Strengthen failure-mode handling and recovery behavior
+## Status
 
-## Security & Privacy
+- [x] Repository bootstrap
+- [ ] Execution engine
+- [ ] Aggregation + formatter
+- [ ] CLI interface
 
-- Do not commit secrets, tokens, or private infrastructure details.
-- Keep screenshots sanitized (no personal identifiers, no credential surfaces).
-- Generated README images in this repo are synthetic and privacy-safe.
-
-## Contributing
-
-Issues and PRs are welcome. Please keep changes focused, tested, and operationally verifiable.
+---
 
 ## License
 
