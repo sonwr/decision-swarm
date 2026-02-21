@@ -1,65 +1,38 @@
 # decision-swarm
 
-<p align="center">
-  <strong>Multi-agent decision support engine</strong><br/>
-  Turn one hard question into structured perspectives, risk maps, and action plans.
-</p>
+A multi-agent decision support system that turns one hard question into many perspectives, then summarizes statistical direction, disagreement, and risk.
 
-<p align="center">
-  <img alt="mode" src="https://img.shields.io/badge/mode-multi--agent-7C3AED"/>
-  <img alt="output" src="https://img.shields.io/badge/output-markdown%20%2B%20json-0EA5E9"/>
-  <img alt="status" src="https://img.shields.io/badge/status-active%20development-16A34A"/>
-</p>
+## Problem
 
----
+Most people decide with 1-2 opinions and weak structure.
+`decision-swarm` provides:
+- parallel advisor agents,
+- explicit pros/cons and counterarguments,
+- confidence/disagreement metrics,
+- practical next-step checklists.
 
-## Overview
+## Core outputs
 
-`decision-swarm` helps with complex decisions by orchestrating multiple advisor agents and aggregating their outputs into a concise recommendation package.
+- **Recommended direction** (with confidence band)
+- **Dissent map** (why agents disagree)
+- **Risk top-3** and mitigation ideas
+- **Action checklist** for the next 24 hours / 7 days
 
----
-
-## Problem It Solves
-
-Most real decisions fail because inputs are narrow and disagreement is implicit.
-This project makes disagreement explicit and actionable.
-
----
-
-## Core Outputs
-
-- Recommended direction + confidence band
-- Dissent map (where/why agents disagree)
-- Top risks with mitigations
-- Practical action checklist (24h / 7d)
-
----
-
-## Planned Architecture
-
-```mermaid
-flowchart LR
-  I[Decision Input Schema] --> P[Advisor Panel]
-  P --> A[Aggregation Engine]
-  A --> R[Decision Report]
-  R --> M[Markdown]
-  R --> J[JSON]
-```
-
----
-
-## MVP Scope
+## MVP scope (v0)
 
 1. Input schema (`question`, `constraints`, `risk_tolerance`, `time_horizon`)
-2. Parallel advisor execution
-3. Aggregation and scoring
-4. Report formatter
+2. Agent panel execution (N advisors)
+3. Aggregation:
+   - vote distribution,
+   - confidence average/std,
+   - argument clustering
+4. Markdown/JSON report output
 
-See: `docs/ROADMAP.md`
+## Repo plan
 
----
+See `docs/ROADMAP.md`.
 
-## Operations Check
+## Operations check
 
 ```bash
 chmod +x scripts/ops-check.sh
@@ -67,23 +40,12 @@ chmod +x scripts/ops-check.sh
 ```
 
 Optional:
-
-```bash
-DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh
-DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-check.sh
-```
-
----
+- `DECISION_SWARM_REPORT_FILE=/tmp/decision-swarm-report.json ./scripts/ops-check.sh`
+- `DECISION_SWARM_HISTORY_FILE=/tmp/decision-swarm-history.jsonl ./scripts/ops-check.sh`
 
 ## Status
 
 - [x] Repository bootstrap
-- [ ] Execution engine
-- [ ] Aggregation + formatter
+- [ ] MVP execution engine
+- [ ] Aggregation + report formatter
 - [ ] CLI interface
-
----
-
-## License
-
-MIT (or project-defined license).
