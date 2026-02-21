@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="176" viewBox="0 0 1200 176">
+  <rect width="1200" height="176" fill="#020617"/>
+  <rect x="0" y="0" width="1200" height="30" fill="#0f172a"/>
+  <circle cx="18" cy="15" r="5" fill="#ef4444"/><circle cx="36" cy="15" r="5" fill="#f59e0b"/><circle cx="54" cy="15" r="5" fill="#22c55e"/>
+  <text x="20" y="48" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">./scripts/ops-check.sh</text>
+<text x="20" y="72" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">readme: ok</text>
+<text x="20" y="96" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">roadmap: ok</text>
+<text x="20" y="120" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">mvp section: check</text>
+<text x="20" y="144" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">status section: check</text>
+<text x="20" y="168" fill="#e2e8f0" font-family="Menlo, monospace" font-size="16">{"service":"decision-swarm","status":"ok"}</text>
+</svg>
