@@ -10,6 +10,7 @@ FAILURES=0
 STALE_ALERT=false
 REPO_ACTIVITY_STATUS="fresh"
 REPO_ACTIVITY_REASON="within_threshold"
+REPO_ACTIVITY_CHECKED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 check_file() {
   local label="$1"
@@ -77,7 +78,7 @@ else
   code=0
 fi
 
-summary="{\"service\":\"decision-swarm\",\"status\":\"${status}\",\"failures\":${FAILURES},\"staleHoursThreshold\":${STALE_HOURS_THRESHOLD},\"staleAlert\":${STALE_ALERT},\"repoActivityStatus\":\"${REPO_ACTIVITY_STATUS}\",\"repoActivityReason\":\"${REPO_ACTIVITY_REASON}\",\"strictStaleFail\":${STRICT_STALE_FAIL},\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+summary="{\"service\":\"decision-swarm\",\"status\":\"${status}\",\"failures\":${FAILURES},\"staleHoursThreshold\":${STALE_HOURS_THRESHOLD},\"staleAlert\":${STALE_ALERT},\"repoActivityStatus\":\"${REPO_ACTIVITY_STATUS}\",\"repoActivityReason\":\"${REPO_ACTIVITY_REASON}\",\"repoActivityCheckedAt\":\"${REPO_ACTIVITY_CHECKED_AT}\",\"strictStaleFail\":${STRICT_STALE_FAIL},\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
 echo "${summary}"
 
 if [[ -n "$REPORT_FILE" ]]; then
