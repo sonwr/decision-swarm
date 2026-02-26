@@ -8,6 +8,8 @@ STALE_HOURS_THRESHOLD="${DECISION_SWARM_STALE_HOURS:-168}"
 STRICT_STALE_FAIL="${DECISION_SWARM_STRICT_STALE_FAIL:-0}"
 FAILURES=0
 STALE_ALERT=false
+REPO_ACTIVITY_STATUS="fresh"
+REPO_ACTIVITY_REASON="within_threshold"
 
 check_file() {
   local label="$1"
@@ -48,11 +50,15 @@ check_repo_activity() {
 
   if (( age_hours >= STALE_HOURS_THRESHOLD )); then
     STALE_ALERT=true
+    REPO_ACTIVITY_STATUS="stale"
+    REPO_ACTIVITY_REASON="age_hours_threshold_reached"
     echo "[decision-swarm] repo activity: stale (${age_hours}h >= ${STALE_HOURS_THRESHOLD}h, latest=${latest_commit_iso})"
     if [[ "$STRICT_STALE_FAIL" == "1" ]]; then
       FAILURES=$((FAILURES + 1))
     fi
   else
+    REPO_ACTIVITY_STATUS="fresh"
+    REPO_ACTIVITY_REASON="within_threshold"
     echo "[decision-swarm] repo activity: fresh (${age_hours}h < ${STALE_HOURS_THRESHOLD}h, latest=${latest_commit_iso})"
   fi
 }
@@ -71,7 +77,7 @@ else
   code=0
 fi
 
-summary="{\"service\":\"decision-swarm\",\"status\":\"${status}\",\"failures\":${FAILURES},\"staleHoursThreshold\":${STALE_HOURS_THRESHOLD},\"staleAlert\":${STALE_ALERT},\"strictStaleFail\":${STRICT_STALE_FAIL},\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+summary="{\"service\":\"decision-swarm\",\"status\":\"${status}\",\"failures\":${FAILURES},\"staleHoursThreshold\":${STALE_HOURS_THRESHOLD},\"staleAlert\":${STALE_ALERT},\"repoActivityStatus\":\"${REPO_ACTIVITY_STATUS}\",\"repoActivityReason\":\"${REPO_ACTIVITY_REASON}\",\"strictStaleFail\":${STRICT_STALE_FAIL},\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
 echo "${summary}"
 
 if [[ -n "$REPORT_FILE" ]]; then
