@@ -36,6 +36,37 @@ test("brief CLI matches snapshot for canonical sample", () => {
   assert.deepEqual(current, snapshot);
 });
 
+test("brief CLI follows output schema contract", () => {
+  const raw = execFileSync("node", [SCRIPT, "--input", SAMPLE, "--format", "json"], {
+    encoding: "utf8",
+  });
+  const report = JSON.parse(raw);
+
+  const required = [
+    "question",
+    "riskTolerance",
+    "timeHorizon",
+    "direction",
+    "confidence",
+    "constraintsCount",
+    "constraintPenalty",
+    "advisorCount",
+    "varianceScore",
+    "riskMatrix",
+    "dissentMap",
+  ];
+
+  for (const key of required) {
+    assert.ok(Object.hasOwn(report, key), `missing key: ${key}`);
+  }
+
+  assert.ok(["low", "medium", "high"].includes(report.riskTolerance));
+  assert.ok(["24h", "7d", "30d"].includes(report.timeHorizon));
+  assert.ok(["conservative", "balanced", "aggressive"].includes(report.direction));
+  assert.equal(Array.isArray(report.riskMatrix), true);
+  assert.equal(Array.isArray(report.dissentMap), true);
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",

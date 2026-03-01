@@ -72,7 +72,7 @@ npm test
 npm run test:update-snapshot
 ```
 
-Includes regression snapshot coverage for canonical brief output.
+Includes regression snapshot coverage for canonical brief output and output schema contract checks (`schemas/brief-output.schema.json`).
 
 ## ◼ Operations Check
 

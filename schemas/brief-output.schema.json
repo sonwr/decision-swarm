@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DecisionSwarmBriefOutput",
+  "type": "object",
+  "required": [
+    "question",
+    "riskTolerance",
+    "timeHorizon",
+    "direction",
+    "confidence",
+    "constraintsCount",
+    "constraintPenalty",
+    "advisorCount",
+    "varianceScore",
+    "riskMatrix",
+    "dissentMap"
+  ],
+  "properties": {
+    "question": { "type": "string" },
+    "riskTolerance": { "type": "string", "enum": ["low", "medium", "high"] },
+    "timeHorizon": { "type": "string", "enum": ["24h", "7d", "30d"] },
+    "direction": { "type": "string", "enum": ["conservative", "balanced", "aggressive"] },
+    "confidence": { "type": "number" },
+    "recommendation": { "type": "string" },
+    "constraintsCount": { "type": "integer", "minimum": 0 },
+    "constraintPenalty": { "type": "number", "minimum": 0 },
+    "advisorCount": { "type": "integer", "minimum": 0 },
+    "varianceScore": { "type": "number", "minimum": 0 },
+    "riskMatrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["vector", "level", "mitigation"],
+        "properties": {
+          "vector": { "type": "string" },
+          "level": { "type": "string", "enum": ["low", "medium", "high"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "dissentMap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["advisor", "stance", "confidence"],
+        "properties": {
+          "advisor": { "type": "string" },
+          "stance": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    },
+    "markdown": { "type": "string" }
+  },
+  "additionalProperties": false
+}
