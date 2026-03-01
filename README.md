@@ -59,6 +59,8 @@ node scripts/generate-brief.mjs \
   --input examples/sample-input.json \
   --format both \
   --out /tmp/decision-brief.json
+
+# invalid enum values fail fast with clear validation errors
 ```
 
 ## ◼ Operations Check

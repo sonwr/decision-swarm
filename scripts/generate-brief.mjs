@@ -32,6 +32,39 @@ function toHorizonScore(timeHorizon = "7d") {
   return 0.6;
 }
 
+
+function validateInput(payload) {
+  const errors = [];
+
+  if (typeof payload !== "object" || payload === null) {
+    return ["input must be a JSON object"];
+  }
+
+  if (typeof payload.question !== "string" || payload.question.trim().length === 0) {
+    errors.push("question must be a non-empty string");
+  }
+
+  if (payload.constraints !== undefined && !Array.isArray(payload.constraints)) {
+    errors.push("constraints must be an array of strings when provided");
+  }
+
+  if (Array.isArray(payload.constraints) && payload.constraints.some((item) => typeof item !== "string")) {
+    errors.push("constraints entries must be strings");
+  }
+
+  const allowedRisk = new Set(["low", "medium", "high"]);
+  if (payload.risk_tolerance !== undefined && !allowedRisk.has(String(payload.risk_tolerance).toLowerCase())) {
+    errors.push("risk_tolerance must be one of: low, medium, high");
+  }
+
+  const allowedHorizon = new Set(["24h", "7d", "30d"]);
+  if (payload.time_horizon !== undefined && !allowedHorizon.has(String(payload.time_horizon).toLowerCase())) {
+    errors.push("time_horizon must be one of: 24h, 7d, 30d");
+  }
+
+  return errors;
+}
+
 function summarizeDirection(input) {
   const constraintsCount = Array.isArray(input.constraints) ? input.constraints.length : 0;
   const risk = toRiskScore(input.risk_tolerance);
@@ -117,6 +150,12 @@ function main() {
 
   const raw = fs.readFileSync(input, "utf8");
   const payload = JSON.parse(raw);
+  const validationErrors = validateInput(payload);
+  if (validationErrors.length > 0) {
+    console.error(`Invalid input: ${validationErrors.join("; ")}`);
+    process.exit(1);
+  }
+
   const report = summarizeDirection(payload);
 
   const jsonResult = {
