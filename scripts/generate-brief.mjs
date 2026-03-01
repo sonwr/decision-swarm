@@ -91,10 +91,50 @@ function summarizeDirection(input) {
   };
 }
 
+
+function buildRiskMatrix(input, report) {
+  const constraints = Array.isArray(input.constraints) ? input.constraints : [];
+
+  const executionRisk = report.direction === "aggressive" ? "high" : report.direction === "balanced" ? "medium" : "low";
+  const rollbackRisk = report.direction === "conservative" ? "low" : "medium";
+  const alignmentRisk = constraints.length >= 3 ? "high" : constraints.length >= 1 ? "medium" : "low";
+
+  return [
+    { vector: "execution_speed", level: executionRisk, mitigation: "use canary rollout and short feedback intervals" },
+    { vector: "rollback_complexity", level: rollbackRisk, mitigation: "prepare explicit rollback runbook before release" },
+    { vector: "constraint_alignment", level: alignmentRisk, mitigation: "convert constraints into measurable acceptance checks" },
+  ];
+}
+
+function buildDissentMap(input, report) {
+  const risk = String(input.risk_tolerance || "medium").toLowerCase();
+
+  if (risk === "high") {
+    return [
+      { advisor: "speed-advocate", stance: "push launch in this cycle", confidence: 0.74 },
+      { advisor: "risk-guardian", stance: "allow launch only with kill-switch and canary", confidence: 0.62 },
+    ];
+  }
+
+  if (risk === "low") {
+    return [
+      { advisor: "risk-guardian", stance: "defer launch until reversibility checks are complete", confidence: 0.76 },
+      { advisor: "speed-advocate", stance: "ship a reduced scope behind a flag", confidence: 0.55 },
+    ];
+  }
+
+  return [
+    { advisor: "balance-operator", stance: "ship progressively with rollback guardrails", confidence: 0.71 },
+    { advisor: "speed-advocate", stance: "optimize for iteration speed after first canary", confidence: 0.58 },
+  ];
+}
+
 function buildMarkdown(input, report) {
   const constraints = Array.isArray(input.constraints) ? input.constraints : [];
   const horizon = input.time_horizon || "7d";
   const risk = input.risk_tolerance || "medium";
+  const riskMatrix = report.riskMatrix || [];
+  const dissentMap = report.dissentMap || [];
 
   return [
     `# Decision Brief`,
@@ -113,6 +153,16 @@ function buildMarkdown(input, report) {
     "",
     `## Recommendation`,
     report.recommendation,
+    "",
+    `## Risk matrix`,
+    ...(riskMatrix.length > 0
+      ? riskMatrix.map((entry) => `- ${entry.vector}: ${entry.level} (mitigation: ${entry.mitigation})`)
+      : ["- none"]),
+    "",
+    `## Dissent map`,
+    ...(dissentMap.length > 0
+      ? dissentMap.map((entry) => `- ${entry.advisor}: ${entry.stance} (confidence: ${entry.confidence})`)
+      : ["- none"]),
     "",
     `## Action windows`,
     `- Next 24h: validate assumptions with one low-cost experiment.`,
@@ -156,7 +206,12 @@ function main() {
     process.exit(1);
   }
 
-  const report = summarizeDirection(payload);
+  const baseReport = summarizeDirection(payload);
+  const report = {
+    ...baseReport,
+    riskMatrix: buildRiskMatrix(payload, baseReport),
+    dissentMap: buildDissentMap(payload, baseReport),
+  };
 
   const jsonResult = {
     question: payload.question || "",

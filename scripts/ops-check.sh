@@ -71,8 +71,9 @@ check_file "sample input" "${REPO_ROOT}/examples/sample-input.json"
 check_token "mvp section" "${REPO_ROOT}/README.md" "MVP[[:space:]]+Scope"
 check_token "status section" "${REPO_ROOT}/README.md" "##[[:space:]]+.*Status"
 
-if node "${REPO_ROOT}/scripts/generate-brief.mjs" --input "${REPO_ROOT}/examples/sample-input.json" --format both | grep -q '"markdown"'; then
-  echo "[decision-swarm] brief generator: ok (both format emitted)"
+brief_output="$(node "${REPO_ROOT}/scripts/generate-brief.mjs" --input "${REPO_ROOT}/examples/sample-input.json" --format both)"
+if grep -q '"markdown"' <<<"$brief_output" && grep -q '"riskMatrix"' <<<"$brief_output" && grep -q '"dissentMap"' <<<"$brief_output"; then
+  echo "[decision-swarm] brief generator: ok (both format + risk/dissent fields emitted)"
 else
   echo "[decision-swarm] brief generator: failed"
   FAILURES=$((FAILURES + 1))
