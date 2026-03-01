@@ -73,6 +73,7 @@ npm run test:update-snapshot
 ```
 
 Includes regression snapshot coverage for canonical brief output and output schema contract checks (`schemas/brief-output.schema.json`).
+CI runs `npm test` and `scripts/ops-check.sh` on push/PR.
 
 ## ◼ Operations Check
 
