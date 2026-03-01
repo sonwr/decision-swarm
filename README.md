@@ -52,6 +52,14 @@ flowchart LR
 3. Consensus/divergence scoring
 4. Multi-format report generation
 
+## ◼ CLI Quickstart (MVP)
+
+```bash
+node scripts/generate-brief.mjs \
+  --input examples/sample-input.json \
+  --format md
+```
+
 ## ◼ Operations Check
 
 ```bash
@@ -64,7 +72,7 @@ chmod +x scripts/ops-check.sh
 - [x] Repository bootstrap
 - [ ] Execution engine
 - [ ] Aggregation internals
-- [ ] CLI workflow
+- [x] CLI workflow (brief generator MVP)
 
 ## ◼ License
 
