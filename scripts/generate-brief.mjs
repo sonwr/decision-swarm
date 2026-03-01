@@ -89,7 +89,7 @@ function buildMarkdown(input, report) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json" };
+  const args = { input: "", format: "json", out: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -99,6 +99,9 @@ function parseArgs(argv) {
     } else if (token === "--format") {
       args.format = argv[i + 1] || "json";
       i += 1;
+    } else if (token === "--out") {
+      args.out = argv[i + 1] || "";
+      i += 1;
     }
   }
 
@@ -106,9 +109,9 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format } = parseArgs(process.argv);
+  const { input, format, out } = parseArgs(process.argv);
   if (!input) {
-    console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md]");
+    console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>]");
     process.exit(1);
   }
 
@@ -116,17 +119,41 @@ function main() {
   const payload = JSON.parse(raw);
   const report = summarizeDirection(payload);
 
-  if (format === "md") {
-    process.stdout.write(buildMarkdown(payload, report));
-    return;
-  }
-
-  process.stdout.write(JSON.stringify({
+  const jsonResult = {
     question: payload.question || "",
     riskTolerance: payload.risk_tolerance || "medium",
     timeHorizon: payload.time_horizon || "7d",
     ...report,
-  }, null, 2));
+  };
+
+  const mdResult = buildMarkdown(payload, report);
+
+  if (format === "md") {
+    if (out) {
+      fs.writeFileSync(out, mdResult, "utf8");
+    }
+    process.stdout.write(mdResult);
+    return;
+  }
+
+  if (format === "both") {
+    const bothResult = {
+      ...jsonResult,
+      markdown: mdResult,
+    };
+    const rendered = JSON.stringify(bothResult, null, 2);
+    if (out) {
+      fs.writeFileSync(out, rendered, "utf8");
+    }
+    process.stdout.write(rendered);
+    return;
+  }
+
+  const rendered = JSON.stringify(jsonResult, null, 2);
+  if (out) {
+    fs.writeFileSync(out, rendered, "utf8");
+  }
+  process.stdout.write(rendered);
 }
 
 main();

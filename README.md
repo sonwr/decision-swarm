@@ -57,7 +57,8 @@ flowchart LR
 ```bash
 node scripts/generate-brief.mjs \
   --input examples/sample-input.json \
-  --format md
+  --format both \
+  --out /tmp/decision-brief.json
 ```
 
 ## ◼ Operations Check
