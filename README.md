@@ -61,6 +61,7 @@ node scripts/generate-brief.mjs \
   --out /tmp/decision-brief.json
 
 # invalid enum values fail fast with clear validation errors
+# output also includes riskMatrix, dissentMap, advisorCount, varianceScore
 ```
 
 ## ◼ Operations Check

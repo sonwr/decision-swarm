@@ -129,6 +129,25 @@ function buildDissentMap(input, report) {
   ];
 }
 
+
+function buildDissentMetrics(dissentMap) {
+  const confidences = dissentMap
+    .map((entry) => Number(entry.confidence))
+    .filter((value) => Number.isFinite(value));
+
+  if (confidences.length === 0) {
+    return { advisorCount: 0, varianceScore: 0 };
+  }
+
+  const avg = confidences.reduce((acc, value) => acc + value, 0) / confidences.length;
+  const variance = confidences.reduce((acc, value) => acc + ((value - avg) ** 2), 0) / confidences.length;
+
+  return {
+    advisorCount: confidences.length,
+    varianceScore: Number(Math.sqrt(variance).toFixed(3)),
+  };
+}
+
 function buildMarkdown(input, report) {
   const constraints = Array.isArray(input.constraints) ? input.constraints : [];
   const horizon = input.time_horizon || "7d";
@@ -160,6 +179,8 @@ function buildMarkdown(input, report) {
       : ["- none"]),
     "",
     `## Dissent map`,
+    `- advisor count: ${report.advisorCount ?? 0}`,
+    `- variance score: ${report.varianceScore ?? 0}`,
     ...(dissentMap.length > 0
       ? dissentMap.map((entry) => `- ${entry.advisor}: ${entry.stance} (confidence: ${entry.confidence})`)
       : ["- none"]),
@@ -207,10 +228,14 @@ function main() {
   }
 
   const baseReport = summarizeDirection(payload);
+  const dissentMap = buildDissentMap(payload, baseReport);
+  const dissentMetrics = buildDissentMetrics(dissentMap);
+
   const report = {
     ...baseReport,
     riskMatrix: buildRiskMatrix(payload, baseReport),
-    dissentMap: buildDissentMap(payload, baseReport),
+    dissentMap,
+    ...dissentMetrics,
   };
 
   const jsonResult = {
