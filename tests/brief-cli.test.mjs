@@ -27,6 +27,11 @@ test("brief CLI matches snapshot for canonical sample", () => {
   });
 
   const current = JSON.parse(raw);
+
+  if (process.env.UPDATE_SNAPSHOT === "1") {
+    fs.writeFileSync(SNAPSHOT, JSON.stringify(current, null, 2));
+  }
+
   const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT, "utf8"));
   assert.deepEqual(current, snapshot);
 });

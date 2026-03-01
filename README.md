@@ -69,6 +69,7 @@ node scripts/generate-brief.mjs \
 
 ```bash
 npm test
+npm run test:update-snapshot
 ```
 
 Includes regression snapshot coverage for canonical brief output.
