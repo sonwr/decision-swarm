@@ -1,10 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import fs from "node:fs";
 
 const REPO_ROOT = new URL("../", import.meta.url).pathname;
 const SCRIPT = `${REPO_ROOT}scripts/generate-brief.mjs`;
 const SAMPLE = `${REPO_ROOT}examples/sample-input.json`;
+const SNAPSHOT = `${REPO_ROOT}tests/fixtures/brief-sample.snapshot.json`;
 
 test("brief CLI emits risk/dissent metrics in json mode", () => {
   const raw = execFileSync("node", [SCRIPT, "--input", SAMPLE, "--format", "json"], {
@@ -17,6 +19,16 @@ test("brief CLI emits risk/dissent metrics in json mode", () => {
   assert.equal(typeof report.varianceScore, "number");
   assert.ok(Array.isArray(report.riskMatrix));
   assert.ok(Array.isArray(report.dissentMap));
+});
+
+test("brief CLI matches snapshot for canonical sample", () => {
+  const raw = execFileSync("node", [SCRIPT, "--input", SAMPLE, "--format", "json"], {
+    encoding: "utf8",
+  });
+
+  const current = JSON.parse(raw);
+  const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT, "utf8"));
+  assert.deepEqual(current, snapshot);
 });
 
 test("brief CLI fails fast on invalid enum values", () => {

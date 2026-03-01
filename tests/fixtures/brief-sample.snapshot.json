@@ -1,0 +1,41 @@
+{
+  "question": "Should we launch feature flag-based onboarding this week?",
+  "riskTolerance": "medium",
+  "timeHorizon": "7d",
+  "direction": "balanced",
+  "confidence": 0.45,
+  "recommendation": "Balance execution speed with explicit rollback and review gates.",
+  "constraintsCount": 3,
+  "constraintPenalty": 0.21,
+  "riskMatrix": [
+    {
+      "vector": "execution_speed",
+      "level": "medium",
+      "mitigation": "use canary rollout and short feedback intervals"
+    },
+    {
+      "vector": "rollback_complexity",
+      "level": "medium",
+      "mitigation": "prepare explicit rollback runbook before release"
+    },
+    {
+      "vector": "constraint_alignment",
+      "level": "high",
+      "mitigation": "convert constraints into measurable acceptance checks"
+    }
+  ],
+  "dissentMap": [
+    {
+      "advisor": "balance-operator",
+      "stance": "ship progressively with rollback guardrails",
+      "confidence": 0.71
+    },
+    {
+      "advisor": "speed-advocate",
+      "stance": "optimize for iteration speed after first canary",
+      "confidence": 0.58
+    }
+  ],
+  "advisorCount": 2,
+  "varianceScore": 0.065
+}
