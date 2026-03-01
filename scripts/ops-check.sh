@@ -68,6 +68,7 @@ check_file "readme" "${REPO_ROOT}/README.md"
 check_file "roadmap" "${REPO_ROOT}/docs/ROADMAP.md"
 check_file "brief generator" "${REPO_ROOT}/scripts/generate-brief.mjs"
 check_file "sample input" "${REPO_ROOT}/examples/sample-input.json"
+check_file "output schema" "${REPO_ROOT}/schemas/brief-output.schema.json"
 check_token "mvp section" "${REPO_ROOT}/README.md" "MVP[[:space:]]+Scope"
 check_token "status section" "${REPO_ROOT}/README.md" "##[[:space:]]+.*Status"
 
@@ -79,8 +80,8 @@ else
 fi
 
 brief_output="$(node "${REPO_ROOT}/scripts/generate-brief.mjs" --input "${REPO_ROOT}/examples/sample-input.json" --format both)"
-if grep -q '"markdown"' <<<"$brief_output" && grep -q '"riskMatrix"' <<<"$brief_output" && grep -q '"dissentMap"' <<<"$brief_output" && grep -q '"advisorCount"' <<<"$brief_output" && grep -q '"varianceScore"' <<<"$brief_output"; then
-  echo "[decision-swarm] brief generator: ok (both format + risk/dissent metrics emitted)"
+if grep -q '"markdown"' <<<"$brief_output" && grep -q '"riskMatrix"' <<<"$brief_output" && grep -q '"dissentMap"' <<<"$brief_output" && grep -q '"advisorCount"' <<<"$brief_output" && grep -q '"varianceScore"' <<<"$brief_output" && grep -q '"constraintPenalty"' <<<"$brief_output"; then
+  echo "[decision-swarm] brief generator: ok (both format + risk/dissent/constraint metrics emitted)"
 else
   echo "[decision-swarm] brief generator: failed"
   FAILURES=$((FAILURES + 1))
