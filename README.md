@@ -65,6 +65,12 @@ node scripts/generate-brief.mjs \
 # constraints can be string or { text, severity: low|medium|high }
 ```
 
+## ◼ Test
+
+```bash
+npm test
+```
+
 ## ◼ Operations Check
 
 ```bash
