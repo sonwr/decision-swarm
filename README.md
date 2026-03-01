@@ -62,6 +62,7 @@ node scripts/generate-brief.mjs \
 
 # invalid enum values fail fast with clear validation errors
 # output also includes riskMatrix, dissentMap, advisorCount, varianceScore
+# constraints can be string or { text, severity: low|medium|high }
 ```
 
 ## ◼ Operations Check

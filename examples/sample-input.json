@@ -1,8 +1,15 @@
 {
   "question": "Should we launch feature flag-based onboarding this week?",
   "constraints": [
-    "No schema migration during peak traffic",
-    "Rollback must complete under 10 minutes"
+    {
+      "text": "No schema migration during peak traffic",
+      "severity": "high"
+    },
+    {
+      "text": "Rollback must complete under 10 minutes",
+      "severity": "high"
+    },
+    "Launch copy must be finalized before release"
   ],
   "risk_tolerance": "medium",
   "time_horizon": "7d"

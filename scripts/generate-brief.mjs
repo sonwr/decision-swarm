@@ -48,8 +48,11 @@ function validateInput(payload) {
     errors.push("constraints must be an array of strings when provided");
   }
 
-  if (Array.isArray(payload.constraints) && payload.constraints.some((item) => typeof item !== "string")) {
-    errors.push("constraints entries must be strings");
+  if (Array.isArray(payload.constraints) && payload.constraints.some((item) => {
+    if (typeof item === "string") return false;
+    return !(typeof item === "object" && item !== null && typeof item.text === "string");
+  })) {
+    errors.push("constraints entries must be strings or objects with { text, severity? }");
   }
 
   const allowedRisk = new Set(["low", "medium", "high"]);
@@ -65,11 +68,46 @@ function validateInput(payload) {
   return errors;
 }
 
+
+function normalizeConstraints(rawConstraints) {
+  if (!Array.isArray(rawConstraints)) {
+    return [];
+  }
+
+  return rawConstraints
+    .map((entry) => {
+      if (typeof entry === "string") {
+        return { text: entry, severity: "medium" };
+      }
+
+      if (typeof entry === "object" && entry !== null && typeof entry.text === "string") {
+        const severity = String(entry.severity || "medium").toLowerCase();
+        return {
+          text: entry.text,
+          severity: ["low", "medium", "high"].includes(severity) ? severity : "medium",
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+}
+
+function toConstraintPenalty(constraints) {
+  return constraints.reduce((acc, constraint) => {
+    if (constraint.severity === "high") return acc + 0.08;
+    if (constraint.severity === "low") return acc + 0.03;
+    return acc + 0.05;
+  }, 0);
+}
+
 function summarizeDirection(input) {
-  const constraintsCount = Array.isArray(input.constraints) ? input.constraints.length : 0;
+  const constraints = normalizeConstraints(input.constraints);
+  const constraintsCount = constraints.length;
   const risk = toRiskScore(input.risk_tolerance);
   const horizon = toHorizonScore(input.time_horizon);
-  const confidence = clamp(0.45 + horizon * 0.35 - constraintsCount * 0.05, 0.2, 0.9);
+  const constraintPenalty = toConstraintPenalty(constraints);
+  const confidence = clamp(0.45 + horizon * 0.35 - constraintPenalty, 0.2, 0.9);
 
   const direction = risk >= 0.7
     ? "aggressive"
@@ -88,12 +126,13 @@ function summarizeDirection(input) {
     confidence: Number(confidence.toFixed(2)),
     recommendation,
     constraintsCount,
+    constraintPenalty: Number(constraintPenalty.toFixed(2)),
   };
 }
 
 
 function buildRiskMatrix(input, report) {
-  const constraints = Array.isArray(input.constraints) ? input.constraints : [];
+  const constraints = normalizeConstraints(input.constraints);
 
   const executionRisk = report.direction === "aggressive" ? "high" : report.direction === "balanced" ? "medium" : "low";
   const rollbackRisk = report.direction === "conservative" ? "low" : "medium";
@@ -149,7 +188,7 @@ function buildDissentMetrics(dissentMap) {
 }
 
 function buildMarkdown(input, report) {
-  const constraints = Array.isArray(input.constraints) ? input.constraints : [];
+  const constraints = normalizeConstraints(input.constraints);
   const horizon = input.time_horizon || "7d";
   const risk = input.risk_tolerance || "medium";
   const riskMatrix = report.riskMatrix || [];
@@ -168,7 +207,7 @@ function buildMarkdown(input, report) {
     `- **Time horizon:** ${horizon}`,
     "",
     `## Constraints`,
-    ...(constraints.length > 0 ? constraints.map((c) => `- ${c}`) : ["- none"]),
+    ...(constraints.length > 0 ? constraints.map((c) => `- ${c.text} [severity: ${c.severity}]`) : ["- none"]),
     "",
     `## Recommendation`,
     report.recommendation,
