@@ -10,6 +10,8 @@
     "confidence",
     "constraintsCount",
     "constraintPenalty",
+    "urgencyScore",
+    "actionBias",
     "advisorCount",
     "varianceScore",
     "riskMatrix",
@@ -24,6 +26,8 @@
     "recommendation": { "type": "string" },
     "constraintsCount": { "type": "integer", "minimum": 0 },
     "constraintPenalty": { "type": "number", "minimum": 0 },
+    "urgencyScore": { "type": "number", "minimum": 0, "maximum": 1 },
+    "actionBias": { "type": "string", "enum": ["stabilize", "sequence", "act_now"] },
     "advisorCount": { "type": "integer", "minimum": 0 },
     "varianceScore": { "type": "number", "minimum": 0 },
     "riskMatrix": {

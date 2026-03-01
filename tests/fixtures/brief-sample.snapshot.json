@@ -7,6 +7,8 @@
   "recommendation": "Balance execution speed with explicit rollback and review gates.",
   "constraintsCount": 3,
   "constraintPenalty": 0.21,
+  "urgencyScore": 0.66,
+  "actionBias": "sequence",
   "riskMatrix": [
     {
       "vector": "execution_speed",

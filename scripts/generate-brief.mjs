@@ -115,6 +115,13 @@ function summarizeDirection(input) {
       ? "conservative"
       : "balanced";
 
+  const urgencyScore = clamp((risk * 0.55) + ((1 - horizon) * 0.35) + (constraintPenalty * 0.9), 0.1, 0.95);
+  const actionBias = urgencyScore >= 0.67
+    ? "act_now"
+    : urgencyScore <= 0.42
+      ? "stabilize"
+      : "sequence";
+
   const recommendation = direction === "aggressive"
     ? "Prioritize speed, accept bounded downside, and add short feedback loops."
     : direction === "conservative"
@@ -127,6 +134,8 @@ function summarizeDirection(input) {
     recommendation,
     constraintsCount,
     constraintPenalty: Number(constraintPenalty.toFixed(2)),
+    urgencyScore: Number(urgencyScore.toFixed(2)),
+    actionBias,
   };
 }
 
@@ -205,6 +214,8 @@ function buildMarkdown(input, report) {
     `- **Confidence:** ${report.confidence}`,
     `- **Risk tolerance:** ${risk}`,
     `- **Time horizon:** ${horizon}`,
+    `- **Urgency score:** ${report.urgencyScore ?? 0}`,
+    `- **Action bias:** ${report.actionBias ?? "sequence"}`,
     "",
     `## Constraints`,
     ...(constraints.length > 0 ? constraints.map((c) => `- ${c.text} [severity: ${c.severity}]`) : ["- none"]),
