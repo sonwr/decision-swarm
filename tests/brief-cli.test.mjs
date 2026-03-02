@@ -52,6 +52,7 @@ test("brief CLI follows output schema contract", () => {
     "constraintPenalty",
     "urgencyScore",
     "actionBias",
+    "urgencyBand",
     "recommendationWindow",
     "advisorCount",
     "varianceScore",
@@ -70,6 +71,7 @@ test("brief CLI follows output schema contract", () => {
   assert.ok(["24h", "7d", "30d"].includes(report.timeHorizon));
   assert.ok(["conservative", "balanced", "aggressive"].includes(report.direction));
   assert.ok(["stabilize", "sequence", "act_now"].includes(report.actionBias));
+  assert.ok(["baseline", "elevated", "critical"].includes(report.urgencyBand));
   assert.ok(["next_24h", "this_week", "this_month"].includes(report.recommendationWindow));
   assert.equal(typeof report.urgencyScore, "number");
   assert.equal(Array.isArray(report.riskMatrix), true);

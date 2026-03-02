@@ -116,6 +116,11 @@ function summarizeDirection(input) {
       : "balanced";
 
   const urgencyScore = clamp((risk * 0.55) + ((1 - horizon) * 0.35) + (constraintPenalty * 0.9), 0.1, 0.95);
+  const urgencyBand = urgencyScore >= 0.75
+    ? "critical"
+    : urgencyScore >= 0.5
+      ? "elevated"
+      : "baseline";
   const actionBias = urgencyScore >= 0.67
     ? "act_now"
     : urgencyScore <= 0.42
@@ -141,6 +146,7 @@ function summarizeDirection(input) {
     constraintPenalty: Number(constraintPenalty.toFixed(2)),
     urgencyScore: Number(urgencyScore.toFixed(2)),
     actionBias,
+    urgencyBand,
     recommendationWindow,
   };
 }
@@ -250,6 +256,7 @@ function buildMarkdown(input, report) {
     `- **Time horizon:** ${horizon}`,
     `- **Urgency score:** ${report.urgencyScore ?? 0}`,
     `- **Action bias:** ${report.actionBias ?? "sequence"}`,
+    `- **Urgency band:** ${report.urgencyBand ?? "baseline"}`,
     `- **Recommendation window:** ${report.recommendationWindow ?? "this_week"}`,
     "",
     `## Constraints`,

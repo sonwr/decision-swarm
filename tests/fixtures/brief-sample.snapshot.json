@@ -9,6 +9,7 @@
   "constraintPenalty": 0.21,
   "urgencyScore": 0.66,
   "actionBias": "sequence",
+  "urgencyBand": "elevated",
   "recommendationWindow": "this_week",
   "riskMatrix": [
     {
