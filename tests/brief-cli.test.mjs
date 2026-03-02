@@ -56,6 +56,8 @@ test("brief CLI follows output schema contract", () => {
     "advisorCount",
     "varianceScore",
     "riskMatrix",
+    "riskLevelCounts",
+    "overallRiskLevel",
     "dissentMap",
   ];
 
@@ -70,6 +72,8 @@ test("brief CLI follows output schema contract", () => {
   assert.ok(["next_24h", "this_week", "this_month"].includes(report.recommendationWindow));
   assert.equal(typeof report.urgencyScore, "number");
   assert.equal(Array.isArray(report.riskMatrix), true);
+  assert.deepEqual(Object.keys(report.riskLevelCounts).sort(), ["high", "low", "medium"]);
+  assert.ok(["low", "medium", "high"].includes(report.overallRiskLevel));
   assert.equal(Array.isArray(report.dissentMap), true);
 });
 

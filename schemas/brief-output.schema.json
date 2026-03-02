@@ -16,6 +16,8 @@
     "advisorCount",
     "varianceScore",
     "riskMatrix",
+    "riskLevelCounts",
+    "overallRiskLevel",
     "dissentMap"
   ],
   "properties": {
@@ -44,6 +46,17 @@
         }
       }
     },
+    "riskLevelCounts": {
+      "type": "object",
+      "required": ["low", "medium", "high"],
+      "properties": {
+        "low": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "integer", "minimum": 0 },
+        "high": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "overallRiskLevel": { "type": "string", "enum": ["low", "medium", "high"] },
     "dissentMap": {
       "type": "array",
       "items": {

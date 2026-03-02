@@ -27,6 +27,12 @@
       "mitigation": "convert constraints into measurable acceptance checks"
     }
   ],
+  "riskLevelCounts": {
+    "low": 0,
+    "medium": 2,
+    "high": 1
+  },
+  "overallRiskLevel": "high",
   "dissentMap": [
     {
       "advisor": "balance-operator",

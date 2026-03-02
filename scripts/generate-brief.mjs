@@ -160,6 +160,27 @@ function buildRiskMatrix(input, report) {
   ];
 }
 
+function summarizeRiskMatrix(riskMatrix) {
+  const counters = { low: 0, medium: 0, high: 0 };
+
+  for (const entry of riskMatrix || []) {
+    if (entry?.level === "low") counters.low += 1;
+    else if (entry?.level === "high") counters.high += 1;
+    else counters.medium += 1;
+  }
+
+  const overall = counters.high > 0
+    ? "high"
+    : counters.medium > 0
+      ? "medium"
+      : "low";
+
+  return {
+    riskLevelCounts: counters,
+    overallRiskLevel: overall,
+  };
+}
+
 function buildDissentMap(input, report) {
   const risk = String(input.risk_tolerance || "medium").toLowerCase();
 
@@ -288,9 +309,12 @@ function main() {
   const dissentMap = buildDissentMap(payload, baseReport);
   const dissentMetrics = buildDissentMetrics(dissentMap);
 
+  const riskMatrix = buildRiskMatrix(payload, baseReport);
+
   const report = {
     ...baseReport,
-    riskMatrix: buildRiskMatrix(payload, baseReport),
+    riskMatrix,
+    ...summarizeRiskMatrix(riskMatrix),
     dissentMap,
     ...dissentMetrics,
   };
