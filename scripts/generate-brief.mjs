@@ -121,6 +121,11 @@ function summarizeDirection(input) {
     : urgencyScore <= 0.42
       ? "stabilize"
       : "sequence";
+  const recommendationWindow = urgencyScore >= 0.75
+    ? "next_24h"
+    : urgencyScore >= 0.5
+      ? "this_week"
+      : "this_month";
 
   const recommendation = direction === "aggressive"
     ? "Prioritize speed, accept bounded downside, and add short feedback loops."
@@ -136,6 +141,7 @@ function summarizeDirection(input) {
     constraintPenalty: Number(constraintPenalty.toFixed(2)),
     urgencyScore: Number(urgencyScore.toFixed(2)),
     actionBias,
+    recommendationWindow,
   };
 }
 
@@ -216,6 +222,7 @@ function buildMarkdown(input, report) {
     `- **Time horizon:** ${horizon}`,
     `- **Urgency score:** ${report.urgencyScore ?? 0}`,
     `- **Action bias:** ${report.actionBias ?? "sequence"}`,
+    `- **Recommendation window:** ${report.recommendationWindow ?? "this_week"}`,
     "",
     `## Constraints`,
     ...(constraints.length > 0 ? constraints.map((c) => `- ${c.text} [severity: ${c.severity}]`) : ["- none"]),

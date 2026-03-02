@@ -12,6 +12,7 @@
     "constraintPenalty",
     "urgencyScore",
     "actionBias",
+    "recommendationWindow",
     "advisorCount",
     "varianceScore",
     "riskMatrix",
@@ -28,6 +29,7 @@
     "constraintPenalty": { "type": "number", "minimum": 0 },
     "urgencyScore": { "type": "number", "minimum": 0, "maximum": 1 },
     "actionBias": { "type": "string", "enum": ["stabilize", "sequence", "act_now"] },
+    "recommendationWindow": { "type": "string", "enum": ["next_24h", "this_week", "this_month"] },
     "advisorCount": { "type": "integer", "minimum": 0 },
     "varianceScore": { "type": "number", "minimum": 0 },
     "riskMatrix": {
