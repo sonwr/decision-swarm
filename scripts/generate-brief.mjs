@@ -101,12 +101,22 @@ function toConstraintPenalty(constraints) {
   }, 0);
 }
 
+function summarizeConstraintSeverities(constraints) {
+  return constraints.reduce((acc, constraint) => {
+    if (constraint.severity === "high") acc.high += 1;
+    else if (constraint.severity === "low") acc.low += 1;
+    else acc.medium += 1;
+    return acc;
+  }, { low: 0, medium: 0, high: 0 });
+}
+
 function summarizeDirection(input) {
   const constraints = normalizeConstraints(input.constraints);
   const constraintsCount = constraints.length;
   const risk = toRiskScore(input.risk_tolerance);
   const horizon = toHorizonScore(input.time_horizon);
   const constraintPenalty = toConstraintPenalty(constraints);
+  const constraintSeverityCounts = summarizeConstraintSeverities(constraints);
   const confidence = clamp(0.45 + horizon * 0.35 - constraintPenalty, 0.2, 0.9);
 
   const direction = risk >= 0.7
@@ -144,6 +154,7 @@ function summarizeDirection(input) {
     recommendation,
     constraintsCount,
     constraintPenalty: Number(constraintPenalty.toFixed(2)),
+    constraintSeverityCounts,
     urgencyScore: Number(urgencyScore.toFixed(2)),
     actionBias,
     urgencyBand,

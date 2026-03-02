@@ -7,6 +7,11 @@
   "recommendation": "Balance execution speed with explicit rollback and review gates.",
   "constraintsCount": 3,
   "constraintPenalty": 0.21,
+  "constraintSeverityCounts": {
+    "low": 0,
+    "medium": 1,
+    "high": 2
+  },
   "urgencyScore": 0.66,
   "actionBias": "sequence",
   "urgencyBand": "elevated",
