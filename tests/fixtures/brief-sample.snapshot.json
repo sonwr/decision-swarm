@@ -35,6 +35,9 @@
   },
   "overallRiskLevel": "high",
   "riskSummary": "High-risk profile (1 high vectors).",
+  "riskHotspots": [
+    "constraint_alignment"
+  ],
   "dissentMap": [
     {
       "advisor": "balance-operator",
