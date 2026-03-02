@@ -85,6 +85,25 @@ test("brief CLI follows output schema contract", () => {
   assert.equal(Array.isArray(report.dissentMap), true);
 });
 
+test("brief CLI supports constraints_csv as a compact input format", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    constraints_csv: "keep rollback path; preserve budget, avoid downtime",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync("node", [SCRIPT, "--input", "/dev/stdin", "--format", "json"], {
+    input,
+    encoding: "utf8",
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  const report = JSON.parse(raw);
+  assert.equal(report.constraintsCount, 3);
+  assert.equal(report.constraintSeverityCounts.medium, 3);
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",

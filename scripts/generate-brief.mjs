@@ -48,6 +48,10 @@ function validateInput(payload) {
     errors.push("constraints must be an array of strings when provided");
   }
 
+  if (payload.constraints_csv !== undefined && typeof payload.constraints_csv !== "string") {
+    errors.push("constraints_csv must be a string when provided");
+  }
+
   if (Array.isArray(payload.constraints) && payload.constraints.some((item) => {
     if (typeof item === "string") return false;
     return !(typeof item === "object" && item !== null && typeof item.text === "string");
@@ -69,12 +73,24 @@ function validateInput(payload) {
 }
 
 
-function normalizeConstraints(rawConstraints) {
-  if (!Array.isArray(rawConstraints)) {
+function parseConstraintCsv(rawCsv) {
+  if (typeof rawCsv !== "string") {
     return [];
   }
 
-  return rawConstraints
+  return rawCsv
+    .split(/[;,\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function normalizeConstraints(rawConstraints, rawConstraintCsv) {
+  const mergedConstraints = [
+    ...(Array.isArray(rawConstraints) ? rawConstraints : []),
+    ...parseConstraintCsv(rawConstraintCsv),
+  ];
+
+  return mergedConstraints
     .map((entry) => {
       if (typeof entry === "string") {
         return { text: entry, severity: "medium" };
@@ -111,7 +127,7 @@ function summarizeConstraintSeverities(constraints) {
 }
 
 function summarizeDirection(input) {
-  const constraints = normalizeConstraints(input.constraints);
+  const constraints = normalizeConstraints(input.constraints, input.constraints_csv);
   const constraintsCount = constraints.length;
   const risk = toRiskScore(input.risk_tolerance);
   const horizon = toHorizonScore(input.time_horizon);
@@ -164,7 +180,7 @@ function summarizeDirection(input) {
 
 
 function buildRiskMatrix(input, report) {
-  const constraints = normalizeConstraints(input.constraints);
+  const constraints = normalizeConstraints(input.constraints, input.constraints_csv);
 
   const executionRisk = report.direction === "aggressive" ? "high" : report.direction === "balanced" ? "medium" : "low";
   const rollbackRisk = report.direction === "conservative" ? "low" : "medium";
@@ -253,7 +269,7 @@ function buildDissentMetrics(dissentMap) {
 }
 
 function buildMarkdown(input, report) {
-  const constraints = normalizeConstraints(input.constraints);
+  const constraints = normalizeConstraints(input.constraints, input.constraints_csv);
   const horizon = input.time_horizon || "7d";
   const risk = input.risk_tolerance || "medium";
   const riskMatrix = report.riskMatrix || [];
