@@ -33,6 +33,7 @@
     "high": 1
   },
   "overallRiskLevel": "high",
+  "riskSummary": "High-risk profile (1 high vectors).",
   "dissentMap": [
     {
       "advisor": "balance-operator",

@@ -58,6 +58,7 @@ test("brief CLI follows output schema contract", () => {
     "riskMatrix",
     "riskLevelCounts",
     "overallRiskLevel",
+    "riskSummary",
     "dissentMap",
   ];
 
@@ -74,6 +75,7 @@ test("brief CLI follows output schema contract", () => {
   assert.equal(Array.isArray(report.riskMatrix), true);
   assert.deepEqual(Object.keys(report.riskLevelCounts).sort(), ["high", "low", "medium"]);
   assert.ok(["low", "medium", "high"].includes(report.overallRiskLevel));
+  assert.equal(typeof report.riskSummary, "string");
   assert.equal(Array.isArray(report.dissentMap), true);
 });
 

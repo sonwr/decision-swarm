@@ -18,6 +18,7 @@
     "riskMatrix",
     "riskLevelCounts",
     "overallRiskLevel",
+    "riskSummary",
     "dissentMap"
   ],
   "properties": {
@@ -57,6 +58,7 @@
       "additionalProperties": false
     },
     "overallRiskLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+    "riskSummary": { "type": "string" },
     "dissentMap": {
       "type": "array",
       "items": {

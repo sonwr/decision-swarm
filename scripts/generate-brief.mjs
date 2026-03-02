@@ -175,9 +175,16 @@ function summarizeRiskMatrix(riskMatrix) {
       ? "medium"
       : "low";
 
+  const riskSummary = overall === "high"
+    ? `High-risk profile (${counters.high} high vectors).`
+    : overall === "medium"
+      ? `Medium-risk profile (${counters.medium} medium vectors, ${counters.high} high vectors).`
+      : "Low-risk profile (no medium/high vectors).";
+
   return {
     riskLevelCounts: counters,
     overallRiskLevel: overall,
+    riskSummary,
   };
 }
 
@@ -252,6 +259,8 @@ function buildMarkdown(input, report) {
     report.recommendation,
     "",
     `## Risk matrix`,
+    `- overall: ${report.overallRiskLevel ?? "medium"}`,
+    `- summary: ${report.riskSummary ?? ""}`,
     ...(riskMatrix.length > 0
       ? riskMatrix.map((entry) => `- ${entry.vector}: ${entry.level} (mitigation: ${entry.mitigation})`)
       : ["- none"]),
