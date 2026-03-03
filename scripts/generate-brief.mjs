@@ -320,7 +320,7 @@ function buildMarkdown(input, report) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -333,6 +333,9 @@ function parseArgs(argv) {
     } else if (token === "--out") {
       args.out = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--constraints-csv") {
+      args.constraintsCsv = argv[i + 1] || "";
+      i += 1;
     }
   }
 
@@ -340,7 +343,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>]");
     process.exit(1);
@@ -348,6 +351,10 @@ function main() {
 
   const raw = fs.readFileSync(input, "utf8");
   const payload = JSON.parse(raw);
+
+  if (constraintsCsv && !payload.constraints_csv) {
+    payload.constraints_csv = constraintsCsv;
+  }
   const validationErrors = validateInput(payload);
   if (validationErrors.length > 0) {
     console.error(`Invalid input: ${validationErrors.join("; ")}`);
