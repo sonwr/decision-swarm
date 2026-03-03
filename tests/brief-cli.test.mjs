@@ -147,6 +147,27 @@ test("brief CLI applies --question-prefix to output question", () => {
   assert.equal(report.question, "[P0] Should we ship now?");
 });
 
+test("brief CLI applies --question-suffix to output question", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--question-suffix", "(owner: growth-team)"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.question, "Should we ship now? (owner: growth-team)");
+});
+
 test("brief CLI applies --risk-override to replace input risk tolerance", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",
