@@ -147,6 +147,28 @@ test("brief CLI applies --question-prefix to output question", () => {
   assert.equal(report.question, "[P0] Should we ship now?");
 });
 
+test("brief CLI applies --risk-override to replace input risk tolerance", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "low",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--risk-override", "high"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.riskTolerance, "high");
+  assert.equal(report.direction, "aggressive");
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",

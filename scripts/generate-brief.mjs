@@ -320,7 +320,7 @@ function buildMarkdown(input, report) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", riskOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -339,6 +339,9 @@ function parseArgs(argv) {
     } else if (token === "--question-prefix") {
       args.questionPrefix = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--risk-override") {
+      args.riskOverride = argv[i + 1] || "";
+      i += 1;
     }
   }
 
@@ -346,7 +349,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, riskOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>]");
     process.exit(1);
@@ -362,6 +365,11 @@ function main() {
   if (questionPrefix && typeof payload.question === "string" && payload.question.trim().length > 0) {
     payload.question = `${questionPrefix.trim()} ${payload.question}`.trim();
   }
+
+  if (riskOverride) {
+    payload.risk_tolerance = riskOverride;
+  }
+
   const validationErrors = validateInput(payload);
   if (validationErrors.length > 0) {
     console.error(`Invalid input: ${validationErrors.join("; ")}`);
