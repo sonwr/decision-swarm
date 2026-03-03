@@ -126,6 +126,27 @@ test("brief CLI accepts constraints via --constraints-csv flag", () => {
   assert.equal(report.constraintSeverityCounts.medium, 2);
 });
 
+test("brief CLI applies --question-prefix to output question", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--question-prefix", "[P0]"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.question, "[P0] Should we ship now?");
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",
