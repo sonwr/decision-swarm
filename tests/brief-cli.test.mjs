@@ -169,6 +169,27 @@ test("brief CLI applies --risk-override to replace input risk tolerance", () => 
   assert.equal(report.direction, "aggressive");
 });
 
+test("brief CLI applies --horizon-override to replace input time horizon", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "medium",
+    time_horizon: "30d",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--horizon-override", "24h"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.timeHorizon, "24h");
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",

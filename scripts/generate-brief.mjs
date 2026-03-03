@@ -320,7 +320,7 @@ function buildMarkdown(input, report) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", riskOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", riskOverride: "", horizonOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -342,6 +342,9 @@ function parseArgs(argv) {
     } else if (token === "--risk-override") {
       args.riskOverride = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--horizon-override") {
+      args.horizonOverride = argv[i + 1] || "";
+      i += 1;
     }
   }
 
@@ -349,7 +352,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, riskOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, riskOverride, horizonOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>]");
     process.exit(1);
@@ -368,6 +371,10 @@ function main() {
 
   if (riskOverride) {
     payload.risk_tolerance = riskOverride;
+  }
+
+  if (horizonOverride) {
+    payload.time_horizon = horizonOverride;
   }
 
   const validationErrors = validateInput(payload);
