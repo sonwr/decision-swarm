@@ -241,6 +241,8 @@ test("brief CLI can customize action window text in markdown output", () => {
       "run one canary experiment",
       "--action-window-7d",
       "finalize go/no-go with explicit KPIs",
+      "--action-window-14d",
+      "prepare launch runbooks for scale",
       "--action-window-30d",
       "bake wins into team playbooks",
     ],
@@ -251,6 +253,7 @@ test("brief CLI can customize action window text in markdown output", () => {
 
   assert.match(raw, /- Next 24h: run one canary experiment/);
   assert.match(raw, /- Next 7d: finalize go\/no-go with explicit KPIs/);
+  assert.match(raw, /- Next 14d: prepare launch runbooks for scale/);
   assert.match(raw, /- Next 30d: bake wins into team playbooks/);
 });
 
