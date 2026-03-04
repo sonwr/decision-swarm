@@ -276,6 +276,12 @@ function buildMarkdown(input, report, options = {}) {
   const dissentMap = report.dissentMap || [];
   const omitRisk = options.omitRisk === true;
   const omitDissent = options.omitDissent === true;
+  const actionWindow24h = typeof options.actionWindow24h === "string" && options.actionWindow24h.trim().length > 0
+    ? options.actionWindow24h.trim()
+    : "validate assumptions with one low-cost experiment.";
+  const actionWindow7d = typeof options.actionWindow7d === "string" && options.actionWindow7d.trim().length > 0
+    ? options.actionWindow7d.trim()
+    : "commit or rollback based on explicit success thresholds.";
 
   const markdownTitle = typeof options.markdownTitle === "string" && options.markdownTitle.trim().length > 0
     ? options.markdownTitle.trim()
@@ -331,14 +337,14 @@ function buildMarkdown(input, report, options = {}) {
     ...riskSection,
     ...dissentSection,
     `## Action windows`,
-    `- Next 24h: validate assumptions with one low-cost experiment.`,
-    `- Next 7d: commit or rollback based on explicit success thresholds.`,
+    `- Next 24h: ${actionWindow24h}`,
+    `- Next 7d: ${actionWindow7d}`,
     "",
   ].join("\n");
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, riskOverride: "", horizonOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, actionWindow24h: "", actionWindow7d: "", riskOverride: "", horizonOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -367,6 +373,12 @@ function parseArgs(argv) {
       args.omitRisk = true;
     } else if (token === "--omit-dissent") {
       args.omitDissent = true;
+    } else if (token === "--action-window-24h") {
+      args.actionWindow24h = argv[i + 1] || "";
+      i += 1;
+    } else if (token === "--action-window-7d") {
+      args.actionWindow7d = argv[i + 1] || "";
+      i += 1;
     } else if (token === "--risk-override") {
       args.riskOverride = argv[i + 1] || "";
       i += 1;
@@ -380,7 +392,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, riskOverride, horizonOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, actionWindow24h, actionWindow7d, riskOverride, horizonOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -440,6 +452,8 @@ function main() {
     markdownTitle,
     omitRisk,
     omitDissent,
+    actionWindow24h,
+    actionWindow7d,
   });
 
   if (format === "md") {

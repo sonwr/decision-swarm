@@ -228,6 +228,29 @@ test("brief CLI can omit dissent section in markdown output", () => {
   assert.doesNotMatch(raw, /## Dissent map/);
 });
 
+test("brief CLI can customize action window text in markdown output", () => {
+  const raw = execFileSync(
+    "node",
+    [
+      SCRIPT,
+      "--input",
+      SAMPLE,
+      "--format",
+      "md",
+      "--action-window-24h",
+      "run one canary experiment",
+      "--action-window-7d",
+      "finalize go/no-go with explicit KPIs",
+    ],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /- Next 24h: run one canary experiment/);
+  assert.match(raw, /- Next 7d: finalize go\/no-go with explicit KPIs/);
+});
+
 test("brief CLI applies --horizon-override to replace input time horizon", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",
