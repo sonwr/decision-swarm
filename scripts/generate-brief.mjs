@@ -282,6 +282,9 @@ function buildMarkdown(input, report, options = {}) {
   const actionWindow7d = typeof options.actionWindow7d === "string" && options.actionWindow7d.trim().length > 0
     ? options.actionWindow7d.trim()
     : "commit or rollback based on explicit success thresholds.";
+  const actionWindow30d = typeof options.actionWindow30d === "string" && options.actionWindow30d.trim().length > 0
+    ? options.actionWindow30d.trim()
+    : "operationalize learnings and lock durable guardrails.";
 
   const markdownTitle = typeof options.markdownTitle === "string" && options.markdownTitle.trim().length > 0
     ? options.markdownTitle.trim()
@@ -339,12 +342,13 @@ function buildMarkdown(input, report, options = {}) {
     `## Action windows`,
     `- Next 24h: ${actionWindow24h}`,
     `- Next 7d: ${actionWindow7d}`,
+    `- Next 30d: ${actionWindow30d}`,
     "",
   ].join("\n");
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, actionWindow24h: "", actionWindow7d: "", riskOverride: "", horizonOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, actionWindow24h: "", actionWindow7d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -379,6 +383,9 @@ function parseArgs(argv) {
     } else if (token === "--action-window-7d") {
       args.actionWindow7d = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--action-window-30d") {
+      args.actionWindow30d = argv[i + 1] || "";
+      i += 1;
     } else if (token === "--risk-override") {
       args.riskOverride = argv[i + 1] || "";
       i += 1;
@@ -392,7 +399,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, actionWindow24h, actionWindow7d, riskOverride, horizonOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, actionWindow24h, actionWindow7d, actionWindow30d, riskOverride, horizonOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -454,6 +461,7 @@ function main() {
     omitDissent,
     actionWindow24h,
     actionWindow7d,
+    actionWindow30d,
   });
 
   if (format === "md") {

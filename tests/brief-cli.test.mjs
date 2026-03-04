@@ -241,6 +241,8 @@ test("brief CLI can customize action window text in markdown output", () => {
       "run one canary experiment",
       "--action-window-7d",
       "finalize go/no-go with explicit KPIs",
+      "--action-window-30d",
+      "bake wins into team playbooks",
     ],
     {
       encoding: "utf8",
@@ -249,6 +251,7 @@ test("brief CLI can customize action window text in markdown output", () => {
 
   assert.match(raw, /- Next 24h: run one canary experiment/);
   assert.match(raw, /- Next 7d: finalize go\/no-go with explicit KPIs/);
+  assert.match(raw, /- Next 30d: bake wins into team playbooks/);
 });
 
 test("brief CLI applies --horizon-override to replace input time horizon", () => {
