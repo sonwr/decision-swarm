@@ -202,6 +202,32 @@ test("brief CLI applies --markdown-title in markdown output", () => {
   assert.match(raw, /^# Decision Brief \(P0\)/);
 });
 
+test("brief CLI can omit risk section in markdown output", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "md", "--omit-risk"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.doesNotMatch(raw, /## Risk matrix/);
+  assert.match(raw, /## Dissent map/);
+});
+
+test("brief CLI can omit dissent section in markdown output", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "md", "--omit-dissent"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /## Risk matrix/);
+  assert.doesNotMatch(raw, /## Dissent map/);
+});
+
 test("brief CLI applies --horizon-override to replace input time horizon", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",

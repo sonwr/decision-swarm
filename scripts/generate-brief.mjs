@@ -274,10 +274,37 @@ function buildMarkdown(input, report, options = {}) {
   const risk = input.risk_tolerance || "medium";
   const riskMatrix = report.riskMatrix || [];
   const dissentMap = report.dissentMap || [];
+  const omitRisk = options.omitRisk === true;
+  const omitDissent = options.omitDissent === true;
 
   const markdownTitle = typeof options.markdownTitle === "string" && options.markdownTitle.trim().length > 0
     ? options.markdownTitle.trim()
     : "Decision Brief";
+
+  const riskSection = omitRisk
+    ? []
+    : [
+      `## Risk matrix`,
+      `- overall: ${report.overallRiskLevel ?? "medium"}`,
+      `- summary: ${report.riskSummary ?? ""}`,
+      `- hotspots: ${(report.riskHotspots || []).join(", ") || "none"}`,
+      ...(riskMatrix.length > 0
+        ? riskMatrix.map((entry) => `- ${entry.vector}: ${entry.level} (mitigation: ${entry.mitigation})`)
+        : ["- none"]),
+      "",
+    ];
+
+  const dissentSection = omitDissent
+    ? []
+    : [
+      `## Dissent map`,
+      `- advisor count: ${report.advisorCount ?? 0}`,
+      `- variance score: ${report.varianceScore ?? 0}`,
+      ...(dissentMap.length > 0
+        ? dissentMap.map((entry) => `- ${entry.advisor}: ${entry.stance} (confidence: ${entry.confidence})`)
+        : ["- none"]),
+      "",
+    ];
 
   return [
     `# ${markdownTitle}`,
@@ -301,21 +328,8 @@ function buildMarkdown(input, report, options = {}) {
     `## Recommendation`,
     report.recommendation,
     "",
-    `## Risk matrix`,
-    `- overall: ${report.overallRiskLevel ?? "medium"}`,
-    `- summary: ${report.riskSummary ?? ""}`,
-    `- hotspots: ${(report.riskHotspots || []).join(", ") || "none"}`,
-    ...(riskMatrix.length > 0
-      ? riskMatrix.map((entry) => `- ${entry.vector}: ${entry.level} (mitigation: ${entry.mitigation})`)
-      : ["- none"]),
-    "",
-    `## Dissent map`,
-    `- advisor count: ${report.advisorCount ?? 0}`,
-    `- variance score: ${report.varianceScore ?? 0}`,
-    ...(dissentMap.length > 0
-      ? dissentMap.map((entry) => `- ${entry.advisor}: ${entry.stance} (confidence: ${entry.confidence})`)
-      : ["- none"]),
-    "",
+    ...riskSection,
+    ...dissentSection,
     `## Action windows`,
     `- Next 24h: validate assumptions with one low-cost experiment.`,
     `- Next 7d: commit or rollback based on explicit success thresholds.`,
@@ -324,7 +338,7 @@ function buildMarkdown(input, report, options = {}) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", riskOverride: "", horizonOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, riskOverride: "", horizonOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -349,6 +363,10 @@ function parseArgs(argv) {
     } else if (token === "--markdown-title") {
       args.markdownTitle = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--omit-risk") {
+      args.omitRisk = true;
+    } else if (token === "--omit-dissent") {
+      args.omitDissent = true;
     } else if (token === "--risk-override") {
       args.riskOverride = argv[i + 1] || "";
       i += 1;
@@ -362,7 +380,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, riskOverride, horizonOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, riskOverride, horizonOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -418,7 +436,11 @@ function main() {
     ...report,
   };
 
-  const mdResult = buildMarkdown(payload, report, { markdownTitle });
+  const mdResult = buildMarkdown(payload, report, {
+    markdownTitle,
+    omitRisk,
+    omitDissent,
+  });
 
   if (format === "md") {
     if (out) {
