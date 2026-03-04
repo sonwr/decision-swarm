@@ -268,15 +268,19 @@ function buildDissentMetrics(dissentMap) {
   };
 }
 
-function buildMarkdown(input, report) {
+function buildMarkdown(input, report, options = {}) {
   const constraints = normalizeConstraints(input.constraints, input.constraints_csv);
   const horizon = input.time_horizon || "7d";
   const risk = input.risk_tolerance || "medium";
   const riskMatrix = report.riskMatrix || [];
   const dissentMap = report.dissentMap || [];
 
+  const markdownTitle = typeof options.markdownTitle === "string" && options.markdownTitle.trim().length > 0
+    ? options.markdownTitle.trim()
+    : "Decision Brief";
+
   return [
-    `# Decision Brief`,
+    `# ${markdownTitle}`,
     "",
     `## Question`,
     `${input.question || "(missing question)"}`,
@@ -320,7 +324,7 @@ function buildMarkdown(input, report) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", riskOverride: "", horizonOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", riskOverride: "", horizonOverride: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -342,6 +346,9 @@ function parseArgs(argv) {
     } else if (token === "--question-suffix") {
       args.questionSuffix = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--markdown-title") {
+      args.markdownTitle = argv[i + 1] || "";
+      i += 1;
     } else if (token === "--risk-override") {
       args.riskOverride = argv[i + 1] || "";
       i += 1;
@@ -355,7 +362,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, riskOverride, horizonOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, riskOverride, horizonOverride } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -411,7 +418,7 @@ function main() {
     ...report,
   };
 
-  const mdResult = buildMarkdown(payload, report);
+  const mdResult = buildMarkdown(payload, report, { markdownTitle });
 
   if (format === "md") {
     if (out) {

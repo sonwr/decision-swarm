@@ -190,6 +190,18 @@ test("brief CLI applies --risk-override to replace input risk tolerance", () => 
   assert.equal(report.direction, "aggressive");
 });
 
+test("brief CLI applies --markdown-title in markdown output", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "md", "--markdown-title", "Decision Brief (P0)"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /^# Decision Brief \(P0\)/);
+});
+
 test("brief CLI applies --horizon-override to replace input time horizon", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",
