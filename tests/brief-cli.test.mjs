@@ -254,6 +254,21 @@ test("brief CLI can customize action window text in markdown output", () => {
   assert.match(raw, /- Next 30d: bake wins into team playbooks/);
 });
 
+test("brief CLI can omit action windows section in markdown output", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "md", "--omit-action-windows"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.doesNotMatch(raw, /## Action windows/);
+  assert.doesNotMatch(raw, /- Next 24h:/);
+  assert.doesNotMatch(raw, /- Next 7d:/);
+  assert.doesNotMatch(raw, /- Next 30d:/);
+});
+
 test("brief CLI applies --horizon-override to replace input time horizon", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",
