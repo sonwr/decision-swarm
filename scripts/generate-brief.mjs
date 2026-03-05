@@ -371,8 +371,25 @@ function buildMarkdown(input, report, options = {}) {
   ].join("\n");
 }
 
+function sortKeysDeep(value) {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.keys(value)
+      .sort((a, b) => a.localeCompare(b))
+      .reduce((acc, key) => {
+        acc[key] = sortKeysDeep(value[key]);
+        return acc;
+      }, {});
+  }
+
+  return value;
+}
+
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "", jsonPretty: true };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "", jsonPretty: true, jsonSortKeys: false };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -426,6 +443,8 @@ function parseArgs(argv) {
       i += 1;
     } else if (token === "--json-compact") {
       args.jsonPretty = false;
+    } else if (token === "--json-sort-keys") {
+      args.jsonSortKeys = true;
     }
   }
 
@@ -433,7 +452,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier, jsonPretty } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier, jsonPretty, jsonSortKeys } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -517,7 +536,8 @@ function main() {
       ...jsonResult,
       markdown: mdResult,
     };
-    const rendered = JSON.stringify(bothResult, null, jsonPretty ? 2 : 0);
+    const serializable = jsonSortKeys ? sortKeysDeep(bothResult) : bothResult;
+    const rendered = JSON.stringify(serializable, null, jsonPretty ? 2 : 0);
     if (out) {
       fs.writeFileSync(out, rendered, "utf8");
     }
@@ -525,7 +545,8 @@ function main() {
     return;
   }
 
-  const rendered = JSON.stringify(jsonResult, null, jsonPretty ? 2 : 0);
+  const serializable = jsonSortKeys ? sortKeysDeep(jsonResult) : jsonResult;
+  const rendered = JSON.stringify(serializable, null, jsonPretty ? 2 : 0);
   if (out) {
     fs.writeFileSync(out, rendered, "utf8");
   }

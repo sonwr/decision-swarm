@@ -376,6 +376,23 @@ test("brief CLI supports compact JSON output", () => {
   assert.equal(typeof parsed.question, "string");
 });
 
+test("brief CLI can sort JSON keys alphabetically", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "json", "--json-compact", "--json-sort-keys"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  const parsed = JSON.parse(raw);
+  assert.equal(typeof parsed.actionBias, "string");
+
+  const keys = Object.keys(parsed);
+  const sorted = [...keys].sort((a, b) => a.localeCompare(b));
+  assert.deepEqual(keys, sorted);
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",
