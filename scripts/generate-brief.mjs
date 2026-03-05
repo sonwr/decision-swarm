@@ -69,6 +69,13 @@ function validateInput(payload) {
     errors.push("time_horizon must be one of: 24h, 7d, 30d");
   }
 
+  if (payload.urgency_multiplier !== undefined) {
+    const value = Number(payload.urgency_multiplier);
+    if (!Number.isFinite(value)) {
+      errors.push("urgency_multiplier must be a finite number when provided");
+    }
+  }
+
   return errors;
 }
 
@@ -133,6 +140,9 @@ function summarizeDirection(input) {
   const horizon = toHorizonScore(input.time_horizon);
   const constraintPenalty = toConstraintPenalty(constraints);
   const constraintSeverityCounts = summarizeConstraintSeverities(constraints);
+  const urgencyMultiplier = Number.isFinite(Number(input.urgency_multiplier))
+    ? clamp(Number(input.urgency_multiplier), 0.5, 1.5)
+    : 1;
   const confidence = clamp(0.45 + horizon * 0.35 - constraintPenalty, 0.2, 0.9);
 
   const direction = risk >= 0.7
@@ -141,7 +151,8 @@ function summarizeDirection(input) {
       ? "conservative"
       : "balanced";
 
-  const urgencyScore = clamp((risk * 0.55) + ((1 - horizon) * 0.35) + (constraintPenalty * 0.9), 0.1, 0.95);
+  const baseUrgency = (risk * 0.55) + ((1 - horizon) * 0.35) + (constraintPenalty * 0.9);
+  const urgencyScore = clamp(baseUrgency * urgencyMultiplier, 0.1, 0.95);
   const urgencyBand = urgencyScore >= 0.75
     ? "critical"
     : urgencyScore >= 0.5
@@ -172,6 +183,7 @@ function summarizeDirection(input) {
     constraintPenalty: Number(constraintPenalty.toFixed(2)),
     constraintSeverityCounts,
     urgencyScore: Number(urgencyScore.toFixed(2)),
+    urgencyMultiplier: Number(urgencyMultiplier.toFixed(2)),
     actionBias,
     urgencyBand,
     recommendationWindow,
@@ -359,7 +371,7 @@ function buildMarkdown(input, report, options = {}) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "" };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -408,6 +420,9 @@ function parseArgs(argv) {
     } else if (token === "--horizon-override") {
       args.horizonOverride = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--urgency-multiplier") {
+      args.urgencyMultiplier = argv[i + 1] || "";
+      i += 1;
     }
   }
 
@@ -415,7 +430,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -442,6 +457,10 @@ function main() {
 
   if (horizonOverride) {
     payload.time_horizon = horizonOverride;
+  }
+
+  if (urgencyMultiplier) {
+    payload.urgency_multiplier = urgencyMultiplier;
   }
 
   const validationErrors = validateInput(payload);

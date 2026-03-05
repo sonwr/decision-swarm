@@ -52,6 +52,7 @@ test("brief CLI follows output schema contract", () => {
     "constraintPenalty",
     "constraintSeverityCounts",
     "urgencyScore",
+    "urgencyMultiplier",
     "actionBias",
     "urgencyBand",
     "recommendationWindow",
@@ -77,6 +78,7 @@ test("brief CLI follows output schema contract", () => {
   assert.ok(["baseline", "elevated", "critical"].includes(report.urgencyBand));
   assert.ok(["next_24h", "this_week", "this_month"].includes(report.recommendationWindow));
   assert.equal(typeof report.urgencyScore, "number");
+  assert.equal(typeof report.urgencyMultiplier, "number");
   assert.equal(Array.isArray(report.riskMatrix), true);
   assert.deepEqual(Object.keys(report.riskLevelCounts).sort(), ["high", "low", "medium"]);
   assert.ok(["low", "medium", "high"].includes(report.overallRiskLevel));
@@ -291,6 +293,61 @@ test("brief CLI applies --horizon-override to replace input time horizon", () =>
 
   const report = JSON.parse(raw);
   assert.equal(report.timeHorizon, "24h");
+});
+
+test("brief CLI applies --urgency-multiplier to urgency outputs", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const baselineRaw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const multipliedRaw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--urgency-multiplier", "1.2"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const baseline = JSON.parse(baselineRaw);
+  const multiplied = JSON.parse(multipliedRaw);
+
+  assert.equal(multiplied.urgencyMultiplier, 1.2);
+  assert.ok(multiplied.urgencyScore >= baseline.urgencyScore);
+});
+
+test("brief CLI clamps urgency multiplier into safe range", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--urgency-multiplier", "9"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.urgencyMultiplier, 1.5);
 });
 
 test("brief CLI fails fast on invalid enum values", () => {

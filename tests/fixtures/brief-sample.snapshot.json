@@ -13,6 +13,7 @@
     "high": 2
   },
   "urgencyScore": 0.66,
+  "urgencyMultiplier": 1,
   "actionBias": "sequence",
   "urgencyBand": "elevated",
   "recommendationWindow": "this_week",
