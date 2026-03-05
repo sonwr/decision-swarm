@@ -372,7 +372,7 @@ function buildMarkdown(input, report, options = {}) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "" };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "", jsonPretty: true };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -424,6 +424,8 @@ function parseArgs(argv) {
     } else if (token === "--urgency-multiplier") {
       args.urgencyMultiplier = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--json-compact") {
+      args.jsonPretty = false;
     }
   }
 
@@ -431,7 +433,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier, jsonPretty } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -515,7 +517,7 @@ function main() {
       ...jsonResult,
       markdown: mdResult,
     };
-    const rendered = JSON.stringify(bothResult, null, 2);
+    const rendered = JSON.stringify(bothResult, null, jsonPretty ? 2 : 0);
     if (out) {
       fs.writeFileSync(out, rendered, "utf8");
     }
@@ -523,7 +525,7 @@ function main() {
     return;
   }
 
-  const rendered = JSON.stringify(jsonResult, null, 2);
+  const rendered = JSON.stringify(jsonResult, null, jsonPretty ? 2 : 0);
   if (out) {
     fs.writeFileSync(out, rendered, "utf8");
   }

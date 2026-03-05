@@ -362,6 +362,20 @@ test("brief CLI clamps urgency multiplier into safe range", () => {
   assert.equal(report.urgencyMultiplier, 1.5);
 });
 
+test("brief CLI supports compact JSON output", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "json", "--json-compact"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.doesNotMatch(raw, /\n\s{2}"question"/);
+  const parsed = JSON.parse(raw);
+  assert.equal(typeof parsed.question, "string");
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",
