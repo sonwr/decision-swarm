@@ -354,6 +354,7 @@ function buildMarkdown(input, report, options = {}) {
     `- **Risk tolerance:** ${risk}`,
     `- **Time horizon:** ${horizon}`,
     `- **Urgency score:** ${report.urgencyScore ?? 0}`,
+    `- **Urgency multiplier:** ${report.urgencyMultiplier ?? 1}`,
     `- **Action bias:** ${report.actionBias ?? "sequence"}`,
     `- **Urgency band:** ${report.urgencyBand ?? "baseline"}`,
     `- **Recommendation window:** ${report.recommendationWindow ?? "this_week"}`,

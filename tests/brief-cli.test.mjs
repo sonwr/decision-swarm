@@ -230,6 +230,18 @@ test("brief CLI can omit dissent section in markdown output", () => {
   assert.doesNotMatch(raw, /## Dissent map/);
 });
 
+test("brief CLI markdown includes urgency multiplier line", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "md", "--urgency-multiplier", "1.3"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /- \*\*Urgency multiplier:\*\* 1\.3/);
+});
+
 test("brief CLI can customize action window text in markdown output", () => {
   const raw = execFileSync(
     "node",
