@@ -106,6 +106,24 @@ test("brief CLI supports constraints_csv as a compact input format", () => {
   assert.equal(report.constraintSeverityCounts.medium, 3);
 });
 
+test("brief CLI supports pipe-delimited constraints_csv values", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    constraints_csv: "latency<200ms | preserve budget | avoid downtime",
+    risk_tolerance: "medium",
+    time_horizon: "7d",
+  });
+
+  const raw = execFileSync("node", [SCRIPT, "--input", "/dev/stdin", "--format", "json"], {
+    input,
+    encoding: "utf8",
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  const report = JSON.parse(raw);
+  assert.equal(report.constraintsCount, 3);
+});
+
 test("brief CLI accepts constraints via --constraints-csv flag", () => {
   const input = JSON.stringify({
     question: "Should we ship now?",

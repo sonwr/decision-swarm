@@ -86,7 +86,7 @@ function parseConstraintCsv(rawCsv) {
   }
 
   return rawCsv
-    .split(/[;,\n]/)
+    .split(/[;,\n|]/)
     .map((item) => item.trim())
     .filter(Boolean);
 }
