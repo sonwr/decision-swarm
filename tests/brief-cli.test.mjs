@@ -393,6 +393,30 @@ test("brief CLI can sort JSON keys alphabetically", () => {
   assert.deepEqual(keys, sorted);
 });
 
+test("brief CLI supports custom json indentation", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "json", "--json-indent", "4"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /\n {4}"question":/);
+});
+
+test("brief CLI clamps json indentation into safe bounds", () => {
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", SAMPLE, "--format", "json", "--json-indent", "99"],
+    {
+      encoding: "utf8",
+    },
+  );
+
+  assert.match(raw, /\n {8}"question":/);
+});
+
 test("brief CLI fails fast on invalid enum values", () => {
   const invalidInput = JSON.stringify({
     question: "Should we ship now?",
