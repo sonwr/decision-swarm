@@ -380,6 +380,62 @@ test("brief CLI clamps urgency multiplier into safe range", () => {
   assert.equal(report.urgencyMultiplier, 1.5);
 });
 
+test("brief CLI applies --confidence-floor to confidence output", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    constraints: [
+      { text: "avoid downtime", severity: "high" },
+      { text: "freeze scope", severity: "high" },
+      { text: "no budget overrun", severity: "high" },
+      { text: "no regressions", severity: "high" },
+      { text: "maintain response SLAs", severity: "high" },
+    ],
+    risk_tolerance: "medium",
+    time_horizon: "24h",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--confidence-floor", "0.7"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.confidence, 0.7);
+});
+
+test("brief CLI clamps --confidence-floor into safe range", () => {
+  const input = JSON.stringify({
+    question: "Should we ship now?",
+    constraints: [
+      { text: "avoid downtime", severity: "high" },
+      { text: "freeze scope", severity: "high" },
+      { text: "no budget overrun", severity: "high" },
+      { text: "no regressions", severity: "high" },
+      { text: "maintain response SLAs", severity: "high" },
+    ],
+    risk_tolerance: "medium",
+    time_horizon: "24h",
+  });
+
+  const raw = execFileSync(
+    "node",
+    [SCRIPT, "--input", "/dev/stdin", "--format", "json", "--confidence-floor", "9"],
+    {
+      input,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    },
+  );
+
+  const report = JSON.parse(raw);
+  assert.equal(report.confidence, 0.9);
+});
+
 test("brief CLI supports compact JSON output", () => {
   const raw = execFileSync(
     "node",

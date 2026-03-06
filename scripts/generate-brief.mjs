@@ -143,7 +143,14 @@ function summarizeDirection(input) {
   const urgencyMultiplier = Number.isFinite(Number(input.urgency_multiplier))
     ? clamp(Number(input.urgency_multiplier), 0.5, 1.5)
     : 1;
-  const confidence = clamp(0.45 + horizon * 0.35 - constraintPenalty, 0.2, 0.9);
+  const confidenceFloor = Number.isFinite(Number(input.confidence_floor))
+    ? clamp(Number(input.confidence_floor), 0, 0.95)
+    : 0;
+  const confidence = clamp(
+    Math.max(0.45 + horizon * 0.35 - constraintPenalty, confidenceFloor),
+    0.2,
+    0.9,
+  );
 
   const direction = risk >= 0.7
     ? "aggressive"
@@ -389,7 +396,7 @@ function sortKeysDeep(value) {
 }
 
 function parseArgs(argv) {
-  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "", jsonPretty: true, jsonSortKeys: false, jsonIndent: 2 };
+  const args = { input: "", format: "json", out: "", constraintsCsv: "", questionPrefix: "", questionSuffix: "", markdownTitle: "", omitRisk: false, omitDissent: false, omitActionWindows: false, actionWindow24h: "", actionWindow7d: "", actionWindow14d: "", actionWindow30d: "", riskOverride: "", horizonOverride: "", urgencyMultiplier: "", confidenceFloor: "", jsonPretty: true, jsonSortKeys: false, jsonIndent: 2 };
 
   for (let i = 2; i < argv.length; i += 1) {
     const token = argv[i];
@@ -441,6 +448,9 @@ function parseArgs(argv) {
     } else if (token === "--urgency-multiplier") {
       args.urgencyMultiplier = argv[i + 1] || "";
       i += 1;
+    } else if (token === "--confidence-floor") {
+      args.confidenceFloor = argv[i + 1] || "";
+      i += 1;
     } else if (token === "--json-compact") {
       args.jsonPretty = false;
     } else if (token === "--json-sort-keys") {
@@ -456,7 +466,7 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier, jsonPretty, jsonSortKeys, jsonIndent } = parseArgs(process.argv);
+  const { input, format, out, constraintsCsv, questionPrefix, questionSuffix, markdownTitle, omitRisk, omitDissent, omitActionWindows, actionWindow24h, actionWindow7d, actionWindow14d, actionWindow30d, riskOverride, horizonOverride, urgencyMultiplier, confidenceFloor, jsonPretty, jsonSortKeys, jsonIndent } = parseArgs(process.argv);
   if (!input) {
     console.error("Usage: node scripts/generate-brief.mjs --input <json-file> [--format json|md|both] [--out <file>] [--question-prefix <text>] [--question-suffix <text>]");
     process.exit(1);
@@ -487,6 +497,10 @@ function main() {
 
   if (urgencyMultiplier) {
     payload.urgency_multiplier = urgencyMultiplier;
+  }
+
+  if (confidenceFloor) {
+    payload.confidence_floor = confidenceFloor;
   }
 
   const validationErrors = validateInput(payload);
